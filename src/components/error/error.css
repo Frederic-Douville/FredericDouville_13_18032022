@@ -1,0 +1,12 @@
+.error-ctn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #2c3e50;
+    font-size: 20px;
+}
+
+.error-number {
+    font-weight: 700;
+    font-size: 150px;
+}
