@@ -2,11 +2,30 @@ import './sign-in.css';
 import {
     useCallAPIToken,
     useCallAPIProfile,
+    useCallAPIChangeProfile,
 } from '../../utils/hooks/useCallAPI';
 
 function SignIn() {
-    const { token } = useCallAPIToken();
-    useCallAPIProfile(token);
+    const userName = document.getElementById('username');
+    const passWord = document.getElementById('password');
+    var data = {};
+
+    function GetUserSignIn(event) {
+        event.preventDefault();
+        data = {
+            email: userName.value,
+            password: passWord.value,
+        };
+        console.log(data);
+
+        return data;
+    }
+
+    //const { token } = useCallAPIToken(data);
+
+    //const { datas } = useCallAPIProfile(token);
+
+    //useCallAPIChangeProfile(token);
 
     return (
         <main className="main bg-dark">
@@ -27,7 +46,9 @@ function SignIn() {
                         <label htmlFor="remember-me">Remember me</label>
                     </div>
 
-                    <button className="sign-in-button">Sign In</button>
+                    <button className="sign-in-button" onClick={GetUserSignIn}>
+                        Sign In
+                    </button>
                 </form>
             </section>
         </main>
