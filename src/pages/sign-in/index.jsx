@@ -1,38 +1,41 @@
 import './sign-in.css';
-import {
-    useCallAPIToken,
-    useCallAPIProfile,
-    useCallAPIChangeProfile,
-} from '../../utils/hooks/useCallAPI';
+import { useStore, useSelector } from 'react-redux';
+import { userData, userToken } from '../../utils/selectors';
+import { getOrUpdateToken } from '../../features/token';
+import { getUserData } from '../../features/user';
 
 function SignIn() {
+    const store = useStore();
+
+    const token = useSelector(userToken);
+    const user = useSelector(userData);
+
+    console.log(token.data);
+    console.log(user.data.firstName, user.data.lastName);
+
     const userName = document.getElementById('username');
     const passWord = document.getElementById('password');
-    var data = {};
+    const formSignIn = document.getElementById('form-sign-in');
 
     function GetUserSignIn(event) {
         event.preventDefault();
-        data = {
-            email: userName.value,
-            password: passWord.value,
+        const data = {
+            email: userName?.value,
+            password: passWord?.value,
         };
-        console.log(data);
-
-        return data;
+        getOrUpdateToken(store, data);
+        if (token) {
+            getUserData(store, token.data);
+            formSignIn?.reset();
+        }
     }
-
-    //const { token } = useCallAPIToken(data);
-
-    //const { datas } = useCallAPIProfile(token);
-
-    //useCallAPIChangeProfile(token);
 
     return (
         <main className="main bg-dark">
             <section className="sign-in-content">
                 <i className="fa fa-user-circle sign-in-icon"></i>
                 <h1>Sign In</h1>
-                <form>
+                <form id="form-sign-in">
                     <div className="input-wrapper">
                         <label htmlFor="username">Username</label>
                         <input type="text" id="username" />

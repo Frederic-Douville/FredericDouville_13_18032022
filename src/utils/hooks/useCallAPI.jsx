@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-export function useCallAPIToken(data) {
+export function useCallAPIToken() {
     const tonyLogin = {
         email: 'tony@stark.com',
         password: 'password123',
@@ -17,7 +17,7 @@ export function useCallAPIToken(data) {
                 const response = await axios({
                     method: 'post',
                     url: 'http://localhost:3001/api/v1/user/login',
-                    data: data,
+                    data: tonyLogin,
                 });
                 console.log(response);
                 setToken(response.data.body.token);
