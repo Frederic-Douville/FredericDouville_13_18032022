@@ -1,16 +1,28 @@
-import { createAction, createReducer } from '@reduxjs/toolkit';
+import produce from 'immer';
 import { userData } from '../utils/selectors';
 import axios from 'axios';
 
 const initialState = {
     status: 'void',
-    data: null,
+    response: null,
     error: null,
 };
 
-const userAxiosRequesting = createAction('user/axiosRequesting');
-const userResolved = createAction('user/resolved');
-const userRejected = createAction('user/rejected');
+const AXIOSREQUESTING = 'user/axiosRequesting';
+const RESOLVED = 'user/resolved';
+const REJECTED = 'user/rejected';
+
+const userAxiosRequesting = () => ({
+    type: AXIOSREQUESTING,
+});
+const userResolved = (data) => ({
+    type: RESOLVED,
+    payload: { data },
+});
+const userRejected = (error) => ({
+    type: REJECTED,
+    payload: { error },
+});
 
 export async function getUserData(store, token) {
     const status = userData(store.getState()).status;
@@ -30,38 +42,44 @@ export async function getUserData(store, token) {
     }
 }
 
-export default createReducer(initialState, (builder) =>
-    builder
-        .addCase(userAxiosRequesting, (draft) => {
-            if (draft.status === 'void') {
-                draft.status = 'pending';
+export default function userReducer(state = initialState, action) {
+    return produce(state, (draft) => {
+        switch (action.type) {
+            case AXIOSREQUESTING: {
+                if (draft.status === 'void') {
+                    draft.status = 'pending';
+                    return;
+                }
+                if (draft.status === 'rejected') {
+                    draft.error = null;
+                    draft.status = 'pending';
+                    return;
+                }
+                if (draft.status === 'resolved') {
+                    draft.status = 'updating';
+                    return;
+                }
                 return;
             }
-            if (draft.status === 'rejected') {
-                draft.status = 'pending';
+            case RESOLVED: {
+                if (draft.status === 'pending' || draft.status === 'updating') {
+                    draft.response = action.payload;
+                    draft.status = 'resolved';
+                    return;
+                }
                 return;
             }
-            if (draft.status === 'resolved') {
-                draft.status = 'updating';
+            case REJECTED: {
+                if (draft.status === 'pending' || draft.status === 'updating') {
+                    draft.status = 'rejected';
+                    draft.error = action.payload;
+                    draft.response = null;
+                    return;
+                }
                 return;
             }
-            return;
-        })
-        .addCase(userResolved, (draft, action) => {
-            if (draft.status === 'pending' || draft.status === 'updating') {
-                draft.data = action.payload;
-                draft.status = 'resolved';
+            default:
                 return;
-            }
-            return;
-        })
-        .addCase(userRejected, (draft, action) => {
-            if (draft.status === 'pending' || draft.status === 'updating') {
-                draft.status = 'rejected';
-                draft.error = action.payload;
-                draft.data = null;
-                return;
-            }
-            return;
-        })
-);
+        }
+    });
+}

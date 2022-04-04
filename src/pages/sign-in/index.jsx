@@ -10,8 +10,7 @@ function SignIn() {
     const token = useSelector(userToken);
     const user = useSelector(userData);
 
-    console.log(token.data);
-    console.log(user.data.firstName, user.data.lastName);
+    //console.log(user.response?.data.firstName, user.response?.data.lastName);
 
     const userName = document.getElementById('username');
     const passWord = document.getElementById('password');
@@ -19,15 +18,15 @@ function SignIn() {
 
     function GetUserSignIn(event) {
         event.preventDefault();
-        const data = {
+        const log = {
             email: userName?.value,
             password: passWord?.value,
         };
-        getOrUpdateToken(store, data);
-        if (token) {
-            getUserData(store, token.data);
-            formSignIn?.reset();
-        }
+        console.log(log);
+        getOrUpdateToken(store, log);
+        console.log(token.response?.data);
+        //getUserData(store, token.response?.data);
+        formSignIn?.reset();
     }
 
     return (
