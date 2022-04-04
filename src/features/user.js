@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { userData } from '../utils/selectors';
+import { userData, userToken } from '../utils/selectors';
 import axios from 'axios';
 
 const initialState = {
@@ -26,19 +26,22 @@ const userRejected = (error) => ({
 
 export async function getUserData(store, token) {
     const status = userData(store.getState()).status;
+    const tokenResponse = userToken(store.getState()).response;
     if (status === 'pending' || status === 'updating') {
         return;
     }
-    store.dispatch(userAxiosRequesting());
-    try {
-        const response = await axios({
-            method: 'post',
-            url: 'http://localhost:3001/api/v1/user/profile',
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        store.dispatch(userResolved(response.data.body));
-    } catch (error) {
-        store.dispatch(userRejected(error));
+    if (tokenResponse != null) {
+        store.dispatch(userAxiosRequesting());
+        try {
+            const response = await axios({
+                method: 'post',
+                url: 'http://localhost:3001/api/v1/user/profile',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            store.dispatch(userResolved(response.data.body));
+        } catch (error) {
+            store.dispatch(userRejected(error));
+        }
     }
 }
 
@@ -57,6 +60,10 @@ export default function userReducer(state = initialState, action) {
                 }
                 if (draft.status === 'resolved') {
                     draft.status = 'updating';
+                    return;
+                }
+                if (draft.response != null) {
+                    draft.response = null;
                     return;
                 }
                 return;

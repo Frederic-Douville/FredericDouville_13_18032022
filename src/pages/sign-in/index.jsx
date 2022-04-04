@@ -1,32 +1,23 @@
 import './sign-in.css';
-import { useStore, useSelector } from 'react-redux';
-import { userData, userToken } from '../../utils/selectors';
-import { getOrUpdateToken } from '../../features/token';
-import { getUserData } from '../../features/user';
+import { useStore } from 'react-redux';
+import { userToken } from '../../utils/selectors';
+import { getToken } from '../../features/token';
 
 function SignIn() {
     const store = useStore();
+    const response = userToken(store.getState()).response;
 
-    const token = useSelector(userToken);
-    const user = useSelector(userData);
+    console.log(response);
 
-    //console.log(user.response?.data.firstName, user.response?.data.lastName);
-
-    const userName = document.getElementById('username');
-    const passWord = document.getElementById('password');
-    const formSignIn = document.getElementById('form-sign-in');
-
-    function GetUserSignIn(event) {
+    function GetUserProfile(event) {
         event.preventDefault();
         const log = {
-            email: userName?.value,
-            password: passWord?.value,
+            email: document.getElementById('username').value,
+            password: document.getElementById('password').value,
         };
         console.log(log);
-        getOrUpdateToken(store, log);
-        console.log(token.response?.data);
-        //getUserData(store, token.response?.data);
-        formSignIn?.reset();
+        getToken(store, log);
+        document.getElementById('form-sign-in').reset();
     }
 
     return (
@@ -48,7 +39,7 @@ function SignIn() {
                         <label htmlFor="remember-me">Remember me</label>
                     </div>
 
-                    <button className="sign-in-button" onClick={GetUserSignIn}>
+                    <button className="sign-in-button" onClick={GetUserProfile}>
                         Sign In
                     </button>
                 </form>

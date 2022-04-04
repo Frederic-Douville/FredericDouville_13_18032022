@@ -1,9 +1,20 @@
 import { useState } from 'react';
+import { useStore, useSelector } from 'react-redux';
+import { userToken, userData } from '../../utils/selectors';
+import { getUserData } from '../../features/user';
 import './user.css';
 
 function User() {
     const [isOpen, setIsOpen] = useState(false);
     const editNameIsOpen = () => setIsOpen(!isOpen);
+
+    const store = useStore();
+    const token = useSelector(userToken);
+    const user = useSelector(userData);
+
+    //getUserData(store, token.response?.data);
+    console.log(token);
+    console.log(user.response?.data.firstName, user.response?.data.lastName);
     return (
         <main className={`main ${isOpen ? 'bg-light' : 'bg-dark'}`}>
             {!isOpen ? (

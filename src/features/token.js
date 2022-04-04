@@ -1,4 +1,5 @@
 import produce from 'immer';
+import { useNavigate } from 'react-router-dom';
 import { userToken } from '../utils/selectors';
 import axios from 'axios';
 
@@ -24,16 +25,12 @@ const tokenRejected = (error) => ({
     payload: { error },
 });
 
-export async function getOrUpdateToken(store, log) {
+export async function getToken(store, log) {
     const status = userToken(store.getState()).status;
-    const response = userToken(store.getState()).response;
+
     if (status === 'pending' || status === 'updating') {
         return;
     }
-    if (response) {
-        return store.dispatch(tokenResolved(null));
-    }
-
     store.dispatch(tokenAxiosRequesting());
     try {
         const response = await axios({
@@ -42,6 +39,7 @@ export async function getOrUpdateToken(store, log) {
             data: log,
         });
         store.dispatch(tokenResolved(response.data.body.token));
+        window.location = '/profile';
     } catch (error) {
         store.dispatch(tokenRejected(error));
     }
@@ -62,6 +60,10 @@ export default function tokenReducer(state = initialState, action) {
                 }
                 if (draft.status === 'resolved') {
                     draft.status = 'updating';
+                    return;
+                }
+                if (draft.response != null) {
+                    draft.response = null;
                     return;
                 }
                 return;
