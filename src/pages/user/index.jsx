@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore, useSelector } from 'react-redux';
 import { userToken, userData } from '../../utils/selectors';
 import { getUserData } from '../../features/user';
@@ -9,12 +9,24 @@ function User() {
     const editNameIsOpen = () => setIsOpen(!isOpen);
 
     const store = useStore();
-    const token = useSelector(userToken);
+    const token = useSelector(userToken).response?.data;
     const user = useSelector(userData);
 
-    //getUserData(store, token.response?.data);
-    console.log(token);
-    console.log(user.response?.data.firstName, user.response?.data.lastName);
+    useEffect(() => {
+        getUserData(store, token);
+    }, [store, token]);
+
+    function submitNewNames(event) {
+        event.preventDefault();
+        const names = {
+            firstName: document.getElementById('firstname').value,
+            lastName: document.getElementById('lastname').value,
+        };
+        console.log(names);
+        document.getElementById('form-change-name').reset();
+        editNameIsOpen();
+    }
+
     return (
         <main className={`main ${isOpen ? 'bg-light' : 'bg-dark'}`}>
             {!isOpen ? (
@@ -22,7 +34,8 @@ function User() {
                     <h1>
                         Welcome back
                         <br />
-                        Tony Jarvis!
+                        {user.response?.data.firstName}{' '}
+                        {user.response?.data.lastName}
                     </h1>
                     <button className="edit-button" onClick={editNameIsOpen}>
                         Edit Name
@@ -31,15 +44,26 @@ function User() {
             ) : (
                 <div className="header-light">
                     <h1>Welcome back</h1>
-                    <form className="edit-name-form-ctn">
+                    <form className="edit-name-form-ctn" id="form-change-name">
                         <div className="edit-name-input-ctn">
                             <label for="firstname"></label>
-                            <input type="text" id="firstname" />
+                            <input
+                                type="text"
+                                id="firstname"
+                                placeholder={user.response?.data.firstName}
+                            />
                             <label for="lastname"></label>
-                            <input type="text" id="lastname" />
+                            <input
+                                type="text"
+                                id="lastname"
+                                placeholder={user.response?.data.lastName}
+                            />
                         </div>
                         <div className="edit-name-button-ctn">
-                            <button className="edit-name-button save-button">
+                            <button
+                                className="edit-name-button save-button"
+                                onClick={submitNewNames}
+                            >
                                 Save
                             </button>
                             <button

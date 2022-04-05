@@ -1,5 +1,4 @@
 import produce from 'immer';
-import { useNavigate } from 'react-router-dom';
 import { userToken } from '../utils/selectors';
 import axios from 'axios';
 
@@ -39,7 +38,6 @@ export async function getToken(store, log) {
             data: log,
         });
         store.dispatch(tokenResolved(response.data.body.token));
-        window.location = '/profile';
     } catch (error) {
         store.dispatch(tokenRejected(error));
     }

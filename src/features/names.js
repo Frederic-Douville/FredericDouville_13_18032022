@@ -12,40 +12,18 @@ const AXIOSREQUESTING = 'user/axiosRequesting';
 const RESOLVED = 'user/resolved';
 const REJECTED = 'user/rejected';
 
-const userAxiosRequesting = () => ({
+const namesAxiosRequesting = () => ({
     type: AXIOSREQUESTING,
 });
-const userResolved = (data) => ({
+const namesResolved = (data) => ({
     type: RESOLVED,
     payload: { data },
 });
-const userRejected = (error) => ({
+const namesRejected = (error) => ({
     type: REJECTED,
     payload: { error },
 });
 
-export async function getUserData(store, token) {
-    const status = userData(store.getState()).status;
-    const tokenResponse = userToken(store.getState()).response;
-    if (status === 'pending' || status === 'updating') {
-        return;
-    }
-    if (tokenResponse != null) {
-        store.dispatch(userAxiosRequesting());
-        try {
-            const response = await axios({
-                method: 'post',
-                url: 'http://localhost:3001/api/v1/user/profile',
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            store.dispatch(userResolved(response.data.body));
-        } catch (error) {
-            store.dispatch(userRejected(error));
-        }
-    }
-}
-
-//essayer avec cette fonction en premier
 export async function changeUserNames(store, token, names) {
     const status = userData(store.getState()).status;
     const tokenResponse = userToken(store.getState()).response;
@@ -53,7 +31,7 @@ export async function changeUserNames(store, token, names) {
         return;
     }
     if (tokenResponse != null) {
-        store.dispatch(userAxiosRequesting());
+        store.dispatch(namesAxiosRequesting());
         try {
             const response = await axios({
                 method: 'post',
@@ -61,14 +39,14 @@ export async function changeUserNames(store, token, names) {
                 headers: { Authorization: `Bearer ${token}` },
                 data: names,
             });
-            store.dispatch(userResolved(response.data.body));
+            store.dispatch(namesResolved(response.data.body));
         } catch (error) {
-            store.dispatch(userRejected(error));
+            store.dispatch(namesRejected(error));
         }
     }
 }
 
-export default function userReducer(state = initialState, action) {
+export default function namesReducer(state = initialState, action) {
     return produce(state, (draft) => {
         switch (action.type) {
             case AXIOSREQUESTING: {

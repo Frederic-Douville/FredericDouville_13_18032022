@@ -1,13 +1,13 @@
 import './sign-in.css';
-import { useStore } from 'react-redux';
+import { useStore, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { userToken } from '../../utils/selectors';
 import { getToken } from '../../features/token';
+import { useEffect } from 'react';
 
 function SignIn() {
     const store = useStore();
-    const response = userToken(store.getState()).response;
-
-    console.log(response);
+    const navigate = useNavigate();
 
     function GetUserProfile(event) {
         event.preventDefault();
@@ -15,8 +15,13 @@ function SignIn() {
             email: document.getElementById('username').value,
             password: document.getElementById('password').value,
         };
-        console.log(log);
         getToken(store, log);
+        window.setTimeout(() => {
+            const status = userToken(store.getState()).status;
+            if (status === 'resolved') {
+                navigate('/profile');
+            }
+        }, 500);
         document.getElementById('form-sign-in').reset();
     }
 
