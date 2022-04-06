@@ -1,9 +1,9 @@
 import './sign-in.css';
-import { useStore, useSelector } from 'react-redux';
+import { useStore } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { userToken } from '../../utils/selectors';
 import { getToken } from '../../features/token';
-import { useEffect } from 'react';
+import { headerUserIsLog } from '../../features/header';
 
 function SignIn() {
     const store = useStore();
@@ -20,8 +20,9 @@ function SignIn() {
             const status = userToken(store.getState()).status;
             if (status === 'resolved') {
                 navigate('/profile');
+                store.dispatch(headerUserIsLog());
             }
-        }, 500);
+        }, 1000);
         document.getElementById('form-sign-in').reset();
     }
 

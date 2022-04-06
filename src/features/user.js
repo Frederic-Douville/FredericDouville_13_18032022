@@ -11,6 +11,7 @@ const initialState = {
 const AXIOSREQUESTING = 'user/axiosRequesting';
 const RESOLVED = 'user/resolved';
 const REJECTED = 'user/rejected';
+const RESET = 'user/reset';
 
 const userAxiosRequesting = () => ({
     type: AXIOSREQUESTING,
@@ -22,6 +23,9 @@ const userResolved = (data) => ({
 const userRejected = (error) => ({
     type: REJECTED,
     payload: { error },
+});
+export const userReset = () => ({
+    type: RESET,
 });
 
 export async function getUserData(store, token) {
@@ -37,29 +41,6 @@ export async function getUserData(store, token) {
                 method: 'post',
                 url: 'http://localhost:3001/api/v1/user/profile',
                 headers: { Authorization: `Bearer ${token}` },
-            });
-            store.dispatch(userResolved(response.data.body));
-        } catch (error) {
-            store.dispatch(userRejected(error));
-        }
-    }
-}
-
-//essayer avec cette fonction en premier
-export async function changeUserNames(store, token, names) {
-    const status = userData(store.getState()).status;
-    const tokenResponse = userToken(store.getState()).response;
-    if (status === 'pending' || status === 'updating') {
-        return;
-    }
-    if (tokenResponse != null) {
-        store.dispatch(userAxiosRequesting());
-        try {
-            const response = await axios({
-                method: 'post',
-                url: 'http://localhost:3001/api/v1/user/profile',
-                headers: { Authorization: `Bearer ${token}` },
-                data: names,
             });
             store.dispatch(userResolved(response.data.body));
         } catch (error) {
@@ -106,6 +87,12 @@ export default function userReducer(state = initialState, action) {
                     draft.response = null;
                     return;
                 }
+                return;
+            }
+            case RESET: {
+                draft.status = 'void';
+                draft.response = null;
+                draft.error = null;
                 return;
             }
             default:

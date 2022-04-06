@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { userData, userToken } from '../utils/selectors';
+import { namesData, userToken } from '../utils/selectors';
 import axios from 'axios';
 
 const initialState = {
@@ -8,9 +8,10 @@ const initialState = {
     error: null,
 };
 
-const AXIOSREQUESTING = 'user/axiosRequesting';
-const RESOLVED = 'user/resolved';
-const REJECTED = 'user/rejected';
+const AXIOSREQUESTING = 'names/axiosRequesting';
+const RESOLVED = 'names/resolved';
+const REJECTED = 'names/rejected';
+const RESET = 'names/reset';
 
 const namesAxiosRequesting = () => ({
     type: AXIOSREQUESTING,
@@ -23,9 +24,12 @@ const namesRejected = (error) => ({
     type: REJECTED,
     payload: { error },
 });
+export const namesReset = () => ({
+    type: RESET,
+});
 
 export async function changeUserNames(store, token, names) {
-    const status = userData(store.getState()).status;
+    const status = namesData(store.getState()).status;
     const tokenResponse = userToken(store.getState()).response;
     if (status === 'pending' || status === 'updating') {
         return;
@@ -34,7 +38,7 @@ export async function changeUserNames(store, token, names) {
         store.dispatch(namesAxiosRequesting());
         try {
             const response = await axios({
-                method: 'post',
+                method: 'put',
                 url: 'http://localhost:3001/api/v1/user/profile',
                 headers: { Authorization: `Bearer ${token}` },
                 data: names,
@@ -84,6 +88,12 @@ export default function namesReducer(state = initialState, action) {
                     draft.response = null;
                     return;
                 }
+                return;
+            }
+            case RESET: {
+                draft.status = 'void';
+                draft.response = null;
+                draft.error = null;
                 return;
             }
             default:

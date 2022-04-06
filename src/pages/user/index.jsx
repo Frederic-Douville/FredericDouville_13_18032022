@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useStore, useSelector } from 'react-redux';
-import { userToken, userData } from '../../utils/selectors';
+import { userToken, userData, namesData } from '../../utils/selectors';
 import { getUserData } from '../../features/user';
+import { changeUserNames } from '../../features/names';
+import { useNavigate } from 'react-router-dom';
 import './user.css';
 
 function User() {
@@ -11,10 +13,15 @@ function User() {
     const store = useStore();
     const token = useSelector(userToken).response?.data;
     const user = useSelector(userData);
+    const navigate = useNavigate();
+
+    useEffect(() => {});
 
     useEffect(() => {
-        getUserData(store, token);
-    }, [store, token]);
+        userToken(store.getState()).status === 'void'
+            ? navigate('/sign-in')
+            : getUserData(store, token);
+    }, [store, token, navigate]);
 
     function submitNewNames(event) {
         event.preventDefault();
@@ -22,7 +29,13 @@ function User() {
             firstName: document.getElementById('firstname').value,
             lastName: document.getElementById('lastname').value,
         };
-        console.log(names);
+        changeUserNames(store, token, names);
+        window.setTimeout(() => {
+            const status = namesData(store.getState()).status;
+            if (status === 'resolved') {
+                getUserData(store, token);
+            }
+        }, 1000);
         document.getElementById('form-change-name').reset();
         editNameIsOpen();
     }
@@ -46,13 +59,13 @@ function User() {
                     <h1>Welcome back</h1>
                     <form className="edit-name-form-ctn" id="form-change-name">
                         <div className="edit-name-input-ctn">
-                            <label for="firstname"></label>
+                            <label htmlFor="firstname"></label>
                             <input
                                 type="text"
                                 id="firstname"
                                 placeholder={user.response?.data.firstName}
                             />
-                            <label for="lastname"></label>
+                            <label htmlFor="lastname"></label>
                             <input
                                 type="text"
                                 id="lastname"

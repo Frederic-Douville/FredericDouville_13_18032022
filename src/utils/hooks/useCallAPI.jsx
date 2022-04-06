@@ -57,7 +57,7 @@ export function useCallAPIChangeProfile(token) {
                 method: 'put',
                 url: 'http://localhost:3001/api/v1/user/profile',
                 headers: { Authorization: `Bearer ${token}` },
-                data: { firstName: 'Steve', lastName: 'Rogers' },
+                data: { firstName: 'Fred', lastName: 'Dou' },
             })
                 .then(function (response) {
                     console.log(response.data);

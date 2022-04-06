@@ -11,6 +11,7 @@ const initialState = {
 const AXIOSREQUESTING = 'token/axiosRequesting';
 const RESOLVED = 'token/resolved';
 const REJECTED = 'token/rejected';
+const RESET = 'token/reset';
 
 const tokenAxiosRequesting = () => ({
     type: AXIOSREQUESTING,
@@ -23,6 +24,8 @@ const tokenRejected = (error) => ({
     type: REJECTED,
     payload: { error },
 });
+
+export const tokenReset = () => ({ type: RESET });
 
 export async function getToken(store, log) {
     const status = userToken(store.getState()).status;
@@ -81,6 +84,12 @@ export default function tokenReducer(state = initialState, action) {
                     draft.response = null;
                     return;
                 }
+                return;
+            }
+            case RESET: {
+                draft.status = 'void';
+                draft.response = null;
+                draft.error = null;
                 return;
             }
             default:
