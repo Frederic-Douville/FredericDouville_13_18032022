@@ -1,3 +1,4 @@
+/**The store which contain the main reducer*/
 import { combineReducers, createStore } from 'redux';
 import tokenReducer from '../features/token.js';
 import userReducer from '../features/user.js';

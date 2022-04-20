@@ -1,13 +1,16 @@
+/**Feature to change user's name and save it or reset it */
 import produce from 'immer';
 import { namesData, userToken } from '../utils/selectors';
 import axios from 'axios';
 
+/**Initial statement */
 const initialState = {
     status: 'void',
     response: null,
     error: null,
 };
 
+/**Actions called in the reducer */
 const AXIOSREQUESTING = 'names/axiosRequesting';
 const RESOLVED = 'names/resolved';
 const REJECTED = 'names/rejected';
@@ -28,6 +31,15 @@ export const namesReset = () => ({
     type: RESET,
 });
 
+/**
+ * Send a PUT request to the API with token and an object to change user's data
+ * @param {function} store hook from react-redux: useStore()
+ * @param {String} token  authorization
+ * @param {Object} names object which contains new names
+ * @returns {Promise}
+ * @returns {Promise.resolve<Object>} data object
+ * @returns {Promise.reject<Error>} error
+ */
 export async function changeUserNames(store, token, names) {
     const status = namesData(store.getState()).status;
     const tokenResponse = userToken(store.getState()).response;
@@ -50,6 +62,7 @@ export async function changeUserNames(store, token, names) {
     }
 }
 
+/**The reducer which contain all the actions and change the statements */
 export default function namesReducer(state = initialState, action) {
     return produce(state, (draft) => {
         switch (action.type) {

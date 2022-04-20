@@ -1,13 +1,16 @@
+/**Feature to get user's data and save it or reset it */
 import produce from 'immer';
 import { userData, userToken } from '../utils/selectors';
 import axios from 'axios';
 
+/**Initial statement */
 const initialState = {
     status: 'void',
     response: null,
     error: null,
 };
 
+/**Actions called in the reducer */
 const AXIOSREQUESTING = 'user/axiosRequesting';
 const RESOLVED = 'user/resolved';
 const REJECTED = 'user/rejected';
@@ -28,6 +31,14 @@ export const userReset = () => ({
     type: RESET,
 });
 
+/**
+ * Send a POST request to the API with token to get user's data
+ * @param {function} store hook from react-redux: useStore()
+ * @param {String} token  authorization
+ * @returns {Promise}
+ * @returns {Promise.resolve<Object>} data object
+ * @returns {Promise.reject<Error>} error
+ */
 export async function getUserData(store, token) {
     const status = userData(store.getState()).status;
     const tokenResponse = userToken(store.getState()).response;
@@ -49,6 +60,7 @@ export async function getUserData(store, token) {
     }
 }
 
+/**The reducer which contain all the actions and change the statements */
 export default function userReducer(state = initialState, action) {
     return produce(state, (draft) => {
         switch (action.type) {

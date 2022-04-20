@@ -6,19 +6,18 @@ import { Home, SignIn, User } from './pages';
 import { Provider } from 'react-redux';
 import store from './utils/store';
 import './index.css';
+
 ReactDOM.render(
     <Provider store={store}>
         <React.StrictMode>
             <Router>
                 <Header />
-
                 <Routes>
                     <Route exact path="/" element={<Home />} />
                     <Route path="/sign-in" element={<SignIn />} />
                     <Route path="/profile" element={<User />} />
                     <Route path="*" element={<Error />} />
                 </Routes>
-
                 <Footer />
             </Router>
         </React.StrictMode>

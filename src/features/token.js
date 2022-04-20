@@ -1,13 +1,16 @@
+/**Feature to get a token and save it or reset it */
 import produce from 'immer';
 import { userToken } from '../utils/selectors';
 import axios from 'axios';
 
+/**Initial statement */
 const initialState = {
     status: 'void',
     response: null,
     error: null,
 };
 
+/**Actions called in the reducer */
 const AXIOSREQUESTING = 'token/axiosRequesting';
 const RESOLVED = 'token/resolved';
 const REJECTED = 'token/rejected';
@@ -25,8 +28,18 @@ const tokenRejected = (error) => ({
     payload: { error },
 });
 
-export const tokenReset = () => ({ type: RESET });
+export const tokenReset = () => ({
+    type: RESET,
+});
 
+/**
+ * Send a POST request to the API with log information to get a token
+ * @param {function} store hook from react-redux: useStore()
+ * @param {Object} log  user's mail and password
+ * @returns {Promise}
+ * @returns {Promise.resolve<Object>} data object
+ * @returns {Promise.reject<Error>} error
+ */
 export async function getToken(store, log) {
     const status = userToken(store.getState()).status;
 
@@ -46,6 +59,7 @@ export async function getToken(store, log) {
     }
 }
 
+/**The reducer which contain all the actions and change the statements */
 export default function tokenReducer(state = initialState, action) {
     return produce(state, (draft) => {
         switch (action.type) {

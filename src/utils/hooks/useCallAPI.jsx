@@ -1,3 +1,5 @@
+/**These hooks aren't call in the app. They were used before Redux implementation */
+
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 

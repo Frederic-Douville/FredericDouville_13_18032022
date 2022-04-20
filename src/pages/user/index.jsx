@@ -15,8 +15,6 @@ function User() {
     const user = useSelector(userData);
     const navigate = useNavigate();
 
-    useEffect(() => {});
-
     useEffect(() => {
         userToken(store.getState()).status === 'void'
             ? navigate('/sign-in')
